@@ -5,11 +5,18 @@ import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
 import { error } from "console";
 
+import { logger } from "hono/logger";
+import { cors } from "hono/cors";
+
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 const app = new Hono();
+
+app.use("*", cors());
+app.use("*", logger());
+
 app.get("/todos", async (c) => {
   const { data, error } = await supabase.from("todos").select("*").order("id");
   if (error) {
